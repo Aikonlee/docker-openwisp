@@ -23,10 +23,20 @@ runs under `qemu-user`, where it crashes with
 The two Dockerfiles reuse the same runtime packages, environment variables and
 entrypoints as the upstream images, and only replace the base image:
 
-- `openvpn`: `alpine:3.22` plus `openvpn iptables bash easy-rsa openssl`, keeping
+Bases are chosen so the runtime version matches the vendor image rather than
+merely being "close enough". `alpine:edge` packages **openvpn 2.7.7-r0** for
+aarch64, which is exactly the version shipped by `lisenet/openvpn:2.7.7`:
+
+- `openvpn`: `alpine:edge` plus `openvpn iptables bash easy-rsa openssl`, keeping
   the upstream `ENV OPENVPN/EASYRSA/...` block and the rest of the file verbatim.
-  Consequence: the packaged OpenVPN version follows Alpine (2.6.x) instead of the
-  vendor image (2.7.x).
+  Result: `OpenVPN 2.7.7 aarch64-alpine-linux-musl [SSL(OpenSSL)] [LZO] [LZ4]
+  [EPOLL] [PKCS11] [MH/PKTINFO] [AEAD] [DCO]`, i.e. the same upstream version,
+  natively compiled for aarch64, with no source build required.
+  The stable branches only carry 2.6.20 (`alpine:3.22`/`3.23`), so using one of
+  them would silently downgrade the service. If edge drift ever becomes a
+  concern, pin the base by digest (`alpine:edge@sha256:...`) instead of falling
+  back to a 2.6 release.
+
 - `postgis`: `postgres:15-bookworm` plus the Debian PostGIS packages, keeping the
   stock `postgres` entrypoint so no `entrypoint:`/`command:` override is needed.
 
