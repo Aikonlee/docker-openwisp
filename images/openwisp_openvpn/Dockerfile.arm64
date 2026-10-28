@@ -1,5 +1,5 @@
 # hadolint ignore=DL3007
-FROM alpine:3.22
+FROM alpine:edge
 RUN apk add --no-cache openvpn iptables bash easy-rsa openssl
 ENV OPENVPN=/etc/openvpn EASYRSA=/usr/share/easy-rsa EASYRSA_CRL_DAYS=3650 EASYRSA_PKI=/etc/openvpn/pki
 
