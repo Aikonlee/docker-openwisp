@@ -1,0 +1,28 @@
+# Local ARM64 overlay. Upstream docker-openwisp ships no ARM support: this file
+# and the two Dockerfile.arm64 next to it are the only local additions.
+#
+# Four upstream image references have no arm64 manifest and would be pulled as
+# amd64 (then run under qemu-user and crash): lisenet/openvpn,
+# postgis/postgis:15-3.4-alpine, redis:alpine and influxdb:1.8-alpine.
+# Each is replaced with a native arm64 equivalent here.
+services:
+  dashboard:   { platform: linux/arm64 }
+  api:         { platform: linux/arm64 }
+  websocket:   { platform: linux/arm64 }
+  nginx:       { platform: linux/arm64 }
+  freeradius:  { platform: linux/arm64 }
+  postfix:     { platform: linux/arm64 }
+  openvpn:
+    platform: linux/arm64
+    build:
+      dockerfile: openwisp_openvpn/Dockerfile.arm64
+  postgres:
+    image: openwisp/postgis:arm64-local
+    platform: linux/arm64
+    build:
+      context: images
+      dockerfile: postgis/Dockerfile.arm64
+  redis:
+    image: redis:7-alpine
+  influxdb:
+    image: influxdb:1.8
