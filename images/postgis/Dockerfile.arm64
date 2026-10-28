@@ -1,0 +1,10 @@
+# Minimal ARM64 PostGIS image.
+# The official postgis/postgis tags ship no arm64 manifest, so on an aarch64 host
+# they run under qemu-user. This rebuilds the same runtime from the multi-arch
+# postgres:15 base plus the Debian PostGIS packages, keeping the stock entrypoint.
+FROM postgres:15-bookworm
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       postgis postgresql-15-postgis-3 \
+    && rm -rf /var/lib/apt/lists/*
